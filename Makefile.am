@@ -696,6 +696,7 @@ sbin_PROGRAMS                    += motr/m0crate/m0crate
 
 motr_m0crate_m0crate_CPPFLAGS = -DM0_TARGET='m0crate' $(AM_CPPFLAGS)
 motr_m0crate_m0crate_LDADD    = $(top_builddir)/motr/libmotr.la \
+								$(top_builddir)/helpers/libmotr-helpers.la \
                                   @AIO_LIBS@ @RT_LIBS@ @YAML_LIBS@
 
 include $(top_srcdir)/motr/m0crate/Makefile.sub

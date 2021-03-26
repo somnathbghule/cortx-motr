@@ -32,6 +32,7 @@
 #include "motr/m0crate/logger.h"
 #include "motr/client_internal.h" /* m0_instance */
 #include "motr/m0crate/crate_client_utils.h"
+#include "helpers/helpers.h"
 
 #define LOG_PREFIX "utils:"
 
@@ -43,6 +44,7 @@ struct m0_client	       *m0_instance = NULL;
 struct m0_container	        container = {};
 static struct m0_realm	        uber_realm = {};
 static struct m0_idx_dix_config dix_conf = {};
+struct m0_ufid_generator ufid_generator;
 
 struct m0_realm *crate_uber_realm()
 {
@@ -140,6 +142,12 @@ int init(struct workload *w)
 		goto do_exit;
 	}
 
+	rc = m0_ufid_init(m0_instance, &ufid_generator);
+	if (rc != 0) {
+		cr_log(CLL_ERROR, "Failed to init ufid\n");
+		goto do_exit;
+	}
+
 	M0_POST(container.co_realm.re_instance != NULL);
 	uber_realm = container.co_realm;
 
@@ -162,6 +170,7 @@ int fini(struct workload *w)
 {
 	num_m0_workloads--;
 	if(num_m0_workloads == 0) {
+		m0_ufid_fini(&ufid_generator);
 		m0_client_fini(m0_instance, true);
 		free_m0_conf();
 	}

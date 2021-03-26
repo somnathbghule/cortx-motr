@@ -49,9 +49,9 @@ if [ ! -f "$M0CRATE" ]; then
 	exit
 fi
 
-keys=(64 128 256 512 1024)
-values=(1024 4096 8192 16384 32768)
-start_of_indexfid=0
+keys=(64) #128 256 512 1024)
+values=(1024) #4096 8192 16384 32768)
+start_of_indexfid=1
 
 time_dir=workload_logs/`date +%d%m%y-%H%M%S`
 config_dir=$time_dir/configs

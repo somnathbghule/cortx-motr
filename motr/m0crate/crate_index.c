@@ -27,6 +27,7 @@
 #include "motr/m0crate/logger.h"
 #include "motr/m0crate/crate_client.h"
 #include "motr/m0crate/crate_client_utils.h"
+#include "helpers/helpers.h"
 
 /** @defgroup crate Crate
  * Utility for executing simple performance tests.
@@ -1366,6 +1367,7 @@ static int create_index(struct m0_uint128 id)
 
 	/* Set an index creation operation. */
 	m0_idx_init(&idx, crate_uber_realm(), &id);
+	//crlog(CLL_INFO, "create_index=" U128X_F "\n", U128_P(&id));
 
 	rc = m0_entity_create(NULL, &idx.in_entity, &ops[0]);
 	if (rc == 0) {
@@ -1469,7 +1471,7 @@ static void cr_watchdog_fini()
 	m0_mutex_fini(&cr_watchdog->lock);
 	m0_free0(&cr_watchdog);
 }
-
+extern struct m0_ufid_generator ufid_generator;
 static int index_operation(struct workload *wt,
 			   struct m0_workload_task *task)
 {
@@ -1483,7 +1485,12 @@ static int index_operation(struct workload *wt,
 	M0_PRE(crate_uber_realm()->re_instance != NULL);
 
 	M0_CASSERT(sizeof(struct m0_uint128) == sizeof(struct m0_fid));
-	memcpy(&index_fid, &wit->index_fid, sizeof(index_fid));
+	//memcpy(&index_fid, &wit->index_fid, sizeof(index_fid));
+	struct m0_uint128 ufid;
+	struct m0_fid m_fid;
+	m0_ufid_next(&ufid_generator, 1, &ufid);
+	m_fid = M0_FID_TINIT('x', ufid.u_hi, ufid.u_lo);
+	memcpy(&index_fid, &m_fid, sizeof(struct m0_fid));
 
 	cr_time_measure_begin(&t);
 
